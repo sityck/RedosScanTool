@@ -9,4 +9,4 @@ Redos漏洞代码扫描器（基于RegexStaticAnalysis）
 
 2、需要先具备RegexStaticAnalysis的运行JAR包： https://github.com/NicolaasWeideman/RegexStaticAnalysis。
 
-3、当前只能单次扫一个文件，后续计划变成目录迭代扫描。
+3、目前已支持目录扫描，后续计划增加报告能力。

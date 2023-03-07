@@ -25,7 +25,7 @@ public class Testrun {
         String result = null;
         Pattern p = Pattern.compile(pattern);
         Matcher m = p.matcher(str);
-        System.out.println(p+"匹配"+str);
+        System.out.println(p+"匹配\n"+str);
         Boolean flag = m.find(); //注意find()函数特性，后续会从当前位置开始匹配
         if (flag){
             System.out.println("匹配成功");
@@ -108,11 +108,12 @@ public class Testrun {
                     linenum ++;
                     if (str.toLowerCase().contains("reg") || str.toLowerCase().contains("pattern")){
                         String pattern = ".*reg.*=(.*)";
+                        System.out.println("命中匹配规则：\n");
                         regexvalue = getregexp(str,pattern);
                         if (regexvalue != null){
                             ArrayList<String> values = new ArrayList<String>();
                             Stmp = getresult(regexvalue);
-                            System.out.println("目标字符串："+str+"行数："+linenum);
+                            System.out.println("目标字符串："+str+"\n行数："+linenum);
                             values.add(String.valueOf(Stmp)); //是否存在漏洞
                             values.add(String.valueOf(linenum)); //第几行
                             Vmap.put(regexvalue,values); //key=正则。value=是否存在漏洞以及第几行
@@ -121,10 +122,11 @@ public class Testrun {
                 }
             }else {
                 //代码文件
+                int linenum2 = 0;
                 // 通过readLine()方法按行读取字符串
                 while ((str = br.readLine()) != null) {
-                    int linenum2 = 0;
                     linenum2++;
+                    System.out.println("文件内容如下：\n");
                     System.out.println(linenum2+str);
                     if (str.toLowerCase().contains("@pattern") || str.toLowerCase().contains("matches") || str.toLowerCase().contains("pattern.compile")){
                         String pattern = ".*\"(.*)\"";
@@ -188,13 +190,29 @@ public class Testrun {
         return Vmap;
     }
 
+    private static void loadfile(File file) throws FileNotFoundException {
+        Map Vmap = new HashMap(); //用于存放正则、是否存在漏洞、行号
+        File[] fs = file.listFiles();
+        for(File f:fs){
+            if(f.isDirectory())	{loadfile(f);}//若是目录，则递归打印该目录下的文件
+            if(f.isFile()){
+                //若是文件，直接打印
+                Vmap = GetRegex(f.getAbsolutePath(),Vmap);
+                System.out.println("Loadfile:"+f.getAbsolutePath());
+                System.out.println("Result:"+Vmap);
+            }
+        }//128.64.205.178
+    }
 
     public static void main(String [] args) throws FileNotFoundException {
         Map Vmap = new HashMap(); //用于存放正则、是否存在漏洞、行号
 
-        String Testregex = "(a+)*"; //默认值
-        String linenum = "";
-        Vmap = GetRegex("D:\\javawork\\test.java",Vmap);
+        //String Testregex = "(a+)*"; //默认值
+        String Path = "D:\\javawork\\RedosScanTool";
+        File file = new File(Path);
+        loadfile(file);
+        //String linenum = "";
+        //Vmap = GetRegex("D:\\javawork\\test.java",Vmap);
         //getregexp("@Pattern(regexp = \"^[A-Za-z0-9_]*$\")",".*\"(.*)\"");
     }
 
